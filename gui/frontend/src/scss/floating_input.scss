@@ -1,0 +1,54 @@
+.label-float {
+    position: relative;
+    margin-top: 20px;
+    color: $color-light-5;
+}
+
+.label-float input {
+    transition: all .1s linear;
+    appearance: none;
+
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    -webkit-appearance: none;
+
+    border-radius: 5px;
+}
+
+.label-float label {
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 20px);
+    left: 10px;
+    transition: all .1s linear;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    background-color: $color-dark-3;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.label-float input:focus + label,
+.label-float input:not(:placeholder-shown) + label {
+    font-size: 13px;
+    top: -12px;
+    padding: 0 7px;
+    font-weight: 550;
+}
+
+.text-input {
+    width: calc(100% - 15px);
+    height: 50px;
+    font-size: 18px;
+    padding-left: 10px;
+    background-color: $color-dark-3;
+    border: none;
+    border: 2px solid $color-light-5;
+    color: $color-light-5;
+}
+
+.text-input:focus {
+    outline: none;
+    border: none;
+    border: 2px solid $color-light-5;
+}

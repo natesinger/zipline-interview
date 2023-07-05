@@ -1,0 +1,73 @@
+{
+  "name": "zipline",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build && npm run copy:html",
+    "lint": "vue-cli-service lint",
+    "copy:html": "ncp templates/login-callback.html dist/login-callback.html"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-brands-svg-icons": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/vue-fontawesome": "^3.0.3",
+    "axios": "^1.4.0",
+    "pdfjs-dist": "^3.7.107",
+    "vue": "^3.2.13",
+    "vue-pdf": "^4.3.0",
+    "vuex": "^4.1.0",
+    "vuex-persistedstate": "^4.1.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "@vue/eslint-config-airbnb": "^6.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-vue": "^8.0.3",
+    "eslint-plugin-vuejs-accessibility": "^1.1.0",
+    "ncp": "^2.0.0",
+    "sass": "^1.32.7",
+    "sass-loader": "^12.0.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "@vue/airbnb"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2020
+    },
+    "rules": {
+      "vuejs-accessibility/label-has-for": "off",
+      "vuejs-accessibility/click-events-have-key-events": "off"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "vue": {
+    "pages": {
+      "404": {
+        "entry": "./src/pages/404.js",
+        "template": "./templates/app.html"
+      },
+      "home": {
+        "entry": "./src/pages/home.js",
+        "template": "./templates/app.html"
+      }
+    }
+  }
+}
