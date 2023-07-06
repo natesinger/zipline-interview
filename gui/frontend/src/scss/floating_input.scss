@@ -1,7 +1,8 @@
 .label-float {
+    display: block;
     position: relative;
-    margin-top: 20px;
-    color: $color-light-5;
+    color: #474747;
+    margin-left: 20px;
 }
 
 .label-float input {
@@ -23,7 +24,7 @@
     transition: all .1s linear;
     -webkit-transition: all .1s linear;
     -moz-transition: all .1s linear;
-    background-color: $color-dark-3;
+    background-color: $color-light-5;
     padding: 5px;
     box-sizing: border-box;
 }
@@ -38,17 +39,19 @@
 
 .text-input {
     width: calc(100% - 15px);
-    height: 50px;
-    font-size: 18px;
+    height: 40px;
+    font-size: 16px;
     padding-left: 10px;
-    background-color: $color-dark-3;
+    background-color: $color-light-5;
     border: none;
-    border: 2px solid $color-light-5;
-    color: $color-light-5;
+    border: 2px solid #7a7a7a;
+    color: $color-dark-3;
 }
 
 .text-input:focus {
     outline: none;
-    border: none;
-    border: 2px solid $color-light-5;
+}
+
+.text-input:disabled:hover {
+    cursor: not-allowed;
 }

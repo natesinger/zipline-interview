@@ -16,17 +16,24 @@
       </div>
       <HospitalBase v-for="hospital in hospitals" :key="hospital.name"
       :name="hospital.name" :x="hospital.x" :y="hospital.y"></HospitalBase>
+      <ZipVehicle v-for="flight in flights"
+      :key="flight" :id="flight.id" :x="flight.x" :y="flight.y"></ZipVehicle>
     </div>
   </div>
 </template>
 
 <script>
 import HospitalBase from '@/components/pages/home/HospitalBase.vue';
+import ZipVehicle from '@/components/pages/home/ZipVehicle.vue';
 
 export default {
   name: 'FlightObserver',
   components: {
     HospitalBase,
+    ZipVehicle,
+  },
+  props: {
+    flights: Array,
   },
   data() {
     return {
