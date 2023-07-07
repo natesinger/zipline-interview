@@ -2,7 +2,13 @@
   <div class="order-pane">
     <div class="title">Unfulfilled Orders ({{ openOrders.length }})</div>
     <div class="order-container">
-      <div v-for="order in openOrders" :key="order.id" class="order"></div>
+      <div v-for="order in openOrders" :key="order.id" class="order">
+        <div class="order-id">{{ order.id }}</div>
+        <div class="order-time">{{ formatTime(order.time) }}</div>
+        <div class="order-status" :class="order.status === 'Emergency' ? 'emergency' : 'resupply'"
+        >{{ order.status }}</div>
+        <div class="order-destination">{{ order.destination }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -13,6 +19,17 @@ export default {
   components: {},
   props: {
     openOrders: Array,
+  },
+  methods: {
+    formatTime(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+
+      const formattedHours = String(hours).padStart(2, '0');
+      const formattedMinutes = String(minutes).padStart(2, '0');
+
+      return `${formattedHours}:${formattedMinutes}`;
+    },
   },
 };
 </script>
@@ -46,9 +63,45 @@ export default {
   .order {
     height: 30px;
     width: 100%;
-    background-color: red;
+    background-color: #dbdbdb;
     margin: 5px 0;
     border-radius: 5px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .order-id {
+      margin: 0 10px;
+    }
+
+    .order-destination {
+      width: 75px;
+      text-align: center;
+    }
+
+    .order-status {
+      height: 70%;
+      min-width: 90px;
+      margin: 0 10px;
+      font-weight: 600;
+      line-height: 14px;
+      border-radius: 5px;
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      &.emergency {
+        color: #d11818;
+      }
+
+      &.resupply {
+        color: #00860b;
+      }
+    }
   }
 
   /*.flight {

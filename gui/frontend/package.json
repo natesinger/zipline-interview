@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build && npm run copy:html",
+    "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "copy:html": "ncp templates/login-callback.html dist/login-callback.html"
   },
@@ -31,7 +31,6 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-vue": "^8.0.3",
     "eslint-plugin-vuejs-accessibility": "^1.1.0",
-    "ncp": "^2.0.0",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0"
   },

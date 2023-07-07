@@ -1,8 +1,8 @@
 <template>
   <div class="control-pane">
-    <div class="control-button">
-      <svg v-if="runStatus === 'running'" class="pause" height="2rem" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM224 192V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32zm128 0V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32z"/></svg>
-      <svg v-else class="play" height="2rem" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9V344c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"/></svg>
+    <div class="control-button" @click="playPause">
+      <svg v-if="runStatus === 'running'" class="pause" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM224 192V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32zm128 0V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32z"/></svg>
+      <svg v-else class="play" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9V344c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"/></svg>
     </div>
     <div class="label-float">
       <input id="playback-speed" class="text-input" placeholder=" " value="15"
@@ -24,6 +24,7 @@ export default {
   data() {
     return {
       runStatus: 'paused',
+      runObject: null,
     };
   },
   mounted() {
@@ -35,6 +36,8 @@ export default {
     slider.oninput = () => {
       output.innerHTML = this.formatTime(slider.value);
     };
+
+    this.$emit('updateData', slider.value);
   },
   methods: {
     formatTime(seconds) {
@@ -45,6 +48,31 @@ export default {
       const formattedMinutes = String(minutes).padStart(2, '0');
 
       return `${formattedHours}:${formattedMinutes}`;
+    },
+    runSimulation() {
+      const slider = document.getElementById('myRange');
+      const currentSec = parseInt(document.getElementById('myRange').value, 10);
+      const minsPerSec = parseInt(document.getElementById('playback-speed').value, 10);
+
+      // check if at max time
+      if (currentSec === 86340) {
+        this.runStatus = 'paused';
+        return;
+      }
+
+      // 60 seconds * x
+      slider.value = currentSec + (minsPerSec * 60);
+      document.getElementById('output').innerHTML = this.formatTime(slider.value);
+      this.$emit('updateData', slider.value);
+    },
+    playPause() {
+      if (this.runStatus === 'paused') {
+        this.runObject = setInterval(this.runSimulation, 1000);
+        this.runStatus = 'running';
+      } else {
+        clearInterval(this.runObject);
+        this.runStatus = 'paused';
+      }
     },
   },
 };
@@ -69,6 +97,8 @@ export default {
   align-items: center;
 
   .control-button {
+    height: 50px;
+    width: 50px;
     margin-left: 20px;
     display: flex;
     align-items: center;

@@ -25,9 +25,7 @@ export default {
   },
   methods: {
     sortFlights(flights) {
-      console.log(flights);
       const flightsSorted = flights.sort((a, b) => a.status.localeCompare(b.status));
-      console.log(flightsSorted);
       return flightsSorted;
     },
   },
