@@ -1,9 +1,11 @@
 <template>
   <div class="order-pane">
-    <div class="title">Unfulfilled Orders ({{ openOrders.length }})</div>
+    <div class="title">Future Orders ({{ futureOrders !== null ? futureOrders.length : 0 }})</div>
     <div class="order-container">
-      <div v-for="order in openOrders" :key="order.id" class="order">
-        <div class="order-id">{{ order.id }}</div>
+      <div v-if="futureOrders === null || futureOrders.length === 0" class="no-orders">
+        <i>All orders have been dispatched.</i>
+      </div>
+      <div v-else v-for="order in futureOrders" :key="order.id" class="order">
         <div class="order-time">{{ formatTime(order.time) }}</div>
         <div class="order-status" :class="order.status === 'Emergency' ? 'emergency' : 'resupply'"
         >{{ order.status }}</div>
@@ -18,7 +20,7 @@ export default {
   name: 'OrderDisplay',
   components: {},
   props: {
-    openOrders: Array,
+    futureOrders: Array,
   },
   methods: {
     formatTime(seconds) {
@@ -41,6 +43,7 @@ export default {
 .order-pane {
   margin-top: 15px;
   width: 400px;
+  height: 316px;
   height: calc((100% - 391px - 15px));
   background-color: $color-light-5;
   border-radius: 10px;
@@ -60,6 +63,11 @@ export default {
     padding: 0 5px;
   }
 
+  .no-orders {
+    display: flex;
+    justify-content: center;
+  }
+
   .order {
     height: 30px;
     width: 100%;
@@ -71,10 +79,6 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-
-    .order-id {
-      margin: 0 10px;
-    }
 
     .order-destination {
       width: 75px;

@@ -6,7 +6,7 @@
         <FlightObserver :flights="flights"></FlightObserver>
         <div class="orders-and-flights">
           <FlightDisplay :flights="flights"></FlightDisplay>
-          <OrderDisplay :openOrders="openOrders"></OrderDisplay>
+          <OrderDisplay :futureOrders="futureOrders"></OrderDisplay>
         </div>
       </div>
       <PlaybackController @updateData="updateData"></PlaybackController>
@@ -31,17 +31,14 @@ export default {
   },
   created() {
     document.title = 'Hack a Bit | Dashboard';
-    console.log('connecting to websocket server...');
     // eslint-disable-next-line no-undef
     this.connection = io(this.deriveWsURL());
 
     this.connection.on('connect', () => {
       this.connection.emit('message', { data: 'connected!' });
-      console.log('connected to websocket server...');
     });
 
     this.connection.on('disconnect', () => {
-      console.log('disconnected from the websocket server...');
     });
 
     this.connection.on('message_event', (message) => this.receiveMessage(message));
@@ -49,7 +46,7 @@ export default {
   data() {
     return {
       flights: null,
-      openOrders: null,
+      futureOrders: null,
       connection: null,
     };
   },
@@ -66,15 +63,13 @@ export default {
     // eslint-disable-next-line object-shorthand
     sendMessage: function (message) {
       this.connection.emit('message_event', { data: message });
-      console.log('sent', message);
     },
     // eslint-disable-next-line object-shorthand
     receiveMessage: function (message) {
       const data = JSON.parse(message);
-      console.log('got', data);
 
       this.flights = data.flights;
-      this.openOrders = data.openOrders;
+      this.futureOrders = data.futureOrders;
     },
   },
 };

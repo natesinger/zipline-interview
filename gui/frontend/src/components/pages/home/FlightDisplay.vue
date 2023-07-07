@@ -2,8 +2,8 @@
   <div class="flight-pane">
     <div class="title">Vehicle Status</div>
     <div class="flights">
-      <div v-for="flight in sortFlights(flights)" :key="flight" class="flight">
-        <div class="flight-id">{{ String(flight.id).padStart(5, '0') }}</div>
+      <div v-if="flights === null" class="no-flights"></div>
+      <div v-else v-for="flight in sortFlights(flights)" :key="flight" class="flight">
         <div class="flight-status"
         :class="flight.status === 'deployed' ? 'deployed' : 'standby'"
         >{{ flight.status.toUpperCase() }}</div>
@@ -38,6 +38,7 @@ export default {
 
 .flight-pane {
   width: 400px;
+  height: 391px;
   background-color: $color-light-5;
   border-radius: 10px;
 
@@ -72,10 +73,6 @@ export default {
     font-size: 16px;
     font-weight: 350;
     line-height: 16px;
-
-    .flight-id {
-      margin: 0 10px;
-    }
 
     .flight-status {
       height: 70%;

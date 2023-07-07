@@ -1,6 +1,7 @@
 # native
 import os
 import sys
+import math
 import json
 import logging
 
@@ -20,6 +21,9 @@ pass
 required_environment_variables = [
     'ZIPLINE_SECRET',
 ]
+
+with open('simulation.json', 'r') as fio:
+    simulation_data = json.load(fio)
 
 for environment_variable in required_environment_variables:
     if environment_variable not in os.environ:
@@ -81,6 +85,7 @@ def process_connect():
     logging.info('client connected')
     emit('my response', 'connected')
 
+"""
 flights = [
     { 'id': '38206', 'status': 'deployed', 'destination': 'Kibilizi', 'x': 38907, 'y': -31610 },
     { 'id': '99519', 'status': 'deployed', 'destination': 'Gitwe', 'x': 57316, 'y': -16810 },
@@ -93,7 +98,7 @@ flights = [
     { 'id': '96216', 'status': 'standby', 'destination': 'N/A', 'x': 0, 'y': 0 },
     { 'id': '21708', 'status': 'standby', 'destination': 'N/A', 'x': 0, 'y': 0 },
 ]
-openOrders = [
+futureOrders = [
     {'id': 54159, 'time': 39659, 'destination': 'Kaduha', 'status': 'Emergency'},
     {'id': 97720, 'time': 45754, 'destination': 'Butaro', 'status': 'Resupply'},
     {'id': 24205, 'time': 85968, 'destination': 'Butaro', 'status': 'Resupply'},
@@ -124,17 +129,20 @@ openOrders = [
     {'id': 13176, 'time': 66277, 'destination': 'Kaduha', 'status': 'Emergency'},
     {'id': 69971, 'time': 40995, 'destination': 'Shyira', 'status': 'Emergency'},
     {'id': 16289, 'time': 30032, 'destination': 'Kabgayi', 'status': 'Emergency'}
-],
+]
+"""
 
 @socketio.on('message_event')
 def process_message(message):
-    time_seconds = int(message['data'])
+    time_seconds = message['data']
     logging.info(f'got {time_seconds} seconds')
 
-    response_object = {
-        'flights': flights,
-        'openOrders': openOrders[0],
-    }
+    try:
+        time_rounded = str(math.floor(int(time_seconds) / 60) * 60)
+        response_object = simulation_data[time_rounded]
+    except KeyError:
+        logging.warning('no flights found')
+        response_object = {'flights': [], 'futureOrders': []}
 
     emit('message_event', json.dumps(response_object))
 

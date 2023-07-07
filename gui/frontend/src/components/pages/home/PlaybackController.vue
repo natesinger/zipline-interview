@@ -1,17 +1,17 @@
 <template>
   <div class="control-pane">
-    <div class="control-button" @click="playPause">
+    <div tabindex="0" class="control-button" @click="playPause" @keydown.space.prevent="playPause">
       <svg v-if="runStatus === 'running'" class="pause" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM224 192V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32zm128 0V320c0 17.7-14.3 32-32 32s-32-14.3-32-32V192c0-17.7 14.3-32 32-32s32 14.3 32 32z"/></svg>
       <svg v-else class="play" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zM188.3 147.1c-7.6 4.2-12.3 12.3-12.3 20.9V344c0 8.7 4.7 16.7 12.3 20.9s16.8 4.1 24.3-.5l144-88c7.1-4.4 11.5-12.1 11.5-20.5s-4.4-16.1-11.5-20.5l-144-88c-7.4-4.5-16.7-4.7-24.3-.5z"/></svg>
     </div>
     <div class="label-float">
-      <input id="playback-speed" class="text-input" placeholder=" " value="15"
+      <input id="playback-speed" class="text-input" placeholder=" " value="5" type="Number"
       :disabled="runStatus === 'running'">
       <label class="non-selectable">Playback (min/s)</label>
     </div>
     <div class="slidecontainer">
-      <input type="range" min="0" max="86340" value="25200" class="slider" id="myRange">
-      <label for="myRange"></label>
+      <input type="range" min="0" max="86340" value="25600" class="slider" id="sliderRange">
+      <label for="sliderRange"></label>
     </div>
     <div class="output" id="output"></div>
   </div>
@@ -28,7 +28,7 @@ export default {
     };
   },
   mounted() {
-    const slider = document.getElementById('myRange');
+    const slider = document.getElementById('sliderRange');
     const output = document.getElementById('output');
     output.innerText = this.formatTime(slider.value);
 
@@ -50,9 +50,15 @@ export default {
       return `${formattedHours}:${formattedMinutes}`;
     },
     runSimulation() {
-      const slider = document.getElementById('myRange');
-      const currentSec = parseInt(document.getElementById('myRange').value, 10);
-      const minsPerSec = parseInt(document.getElementById('playback-speed').value, 10);
+      const slider = document.getElementById('sliderRange');
+      const currentSec = parseInt(document.getElementById('sliderRange').value, 10);
+      let minsPerSec = parseInt(document.getElementById('playback-speed').value, 10);
+
+      // type validation
+      if (Number.isNaN(minsPerSec)) {
+        document.getElementById('playback-speed').value = 5;
+        minsPerSec = 5;
+      }
 
       // check if at max time
       if (currentSec === 86340) {

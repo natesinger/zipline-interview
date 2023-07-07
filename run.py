@@ -1,11 +1,12 @@
 #! /usr/bin/env python3
 
 import os
+import math
+import json
 import logging
 from typing import Dict, List, TextIO
 
 # If you add or upgrade any pip packages, please specify in `requirements.txt`
-import yaml  # noqa
 
 # Each Nest has this many Zips
 NUM_ZIPS = 10
@@ -27,6 +28,9 @@ RESUPPLY = "Resupply"
 # Setup logging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
+
+# Setup simulation result object
+simulation_result = {}
 
 # You shouldn't need to modify this class
 class Hospital:
@@ -220,11 +224,68 @@ class ZipScheduler:
                 self.unfulfilled_orders.remove(order)
 
             # assign the flight and decrement the number of available zips
-            flights.append(Flight(current_time, current_time+500, orders_to_send))
+            trip_time = get_trip_time_sec(
+                start_x = 0,
+                start_y = 0,
+                end_x = orders_to_send[0].hospital.north_m,
+                end_y = orders_to_send[0].hospital.east_m,
+                speed = ZIP_SPEED_MPS
+            )
+            
+            flights.append(Flight(
+                    launch_time=current_time,
+                    return_time=current_time + trip_time,
+                    orders=orders_to_send
+                )
+            )
             self.num_zips -= 1
 
+        if len(self.unfulfilled_orders) > 0:
+            print(f'[{current_time}] there are unfulfilled orders and no zips left {self.unfulfilled_orders}')
         return flights
 
+
+def find_point_on_line(start_x:int, start_y:int, end_x:int, end_y:int, speed:int, time:int, start_time:int):
+    # calculate distance between start and end coordinates
+    distance = math.sqrt((end_x - start_x)**2 + (end_y - start_y)**2)
+
+    # calculate total time based on distance and speed
+    total_time = distance / speed
+
+    # calculate elapsed time based on start time and current time
+    elapsed_time = time - start_time
+
+    # calculate the ratio of elapsed time to total time
+    time_ratio = elapsed_time / total_time
+
+    # calculate the distance covered so far
+    covered_distance = time_ratio * distance
+
+    # interpolate the position between the start and end coordinates
+    current_x = int(start_x + (end_x - start_x) * (covered_distance / distance))
+    current_y = int(start_y + (end_y - start_y) * (covered_distance / distance))
+
+    return current_x, current_y
+
+def get_trip_time_sec(start_x:int, start_y:int, end_x:int, end_y:int, speed:int):
+    # calculate distance between start and end coordinates
+    distance = math.sqrt((end_x - start_x)**2 + (end_y - start_y)**2)
+
+    # calculate total time based on distance and speed
+    one_way_time = int(distance / speed)
+
+    return one_way_time * 2
+
+def point_angle_deg(start_x:int, start_y:int, end_x:int, end_y:int):
+    dx = end_x - start_x
+    dy = end_y - start_y
+    
+    angle_radians = math.atan2(dy, dx)
+    angle_degrees = math.degrees(angle_radians)
+
+    if angle_degrees < 0: angle_degrees += 360
+
+    return int(angle_degrees)
 
 class Runner:
     """
@@ -262,7 +323,7 @@ class Runner:
         # Simulate time going from the first order time, until the end of the
         # day, in 1 minute increments
         sec_per_day = 24 * 60 * 60
-        for sec_since_midnight in range(self.orders[0].time, sec_per_day):
+        for sec_since_midnight in range(sec_per_day):
             # Find and queue pending orders.
             self.__queue_pending_orders(sec_since_midnight)
             self.__remove_returned_flights(sec_since_midnight)
@@ -271,6 +332,98 @@ class Runner:
 
                 # Once a minute, poke the flight launcher
                 self.__update_launch_flights(sec_since_midnight)
+
+                # Once a minute, log the simulation for visualizer
+                flights = []
+                for i in range(10):
+                    try:
+                        flight = self.active_flights[i]
+                        flight_order = self.active_flights[i].orders[0]
+                        
+                        total_trip_time = get_trip_time_sec(
+                            start_x=0,
+                            start_y=0,
+                            end_x=flight_order.hospital.east_m,
+                            end_y=flight_order.hospital.north_m,
+                            speed=ZIP_SPEED_MPS
+                        )
+
+                        # outbound
+                        if sec_since_midnight < flight.launch_time + (total_trip_time / 2):
+                            x, y = find_point_on_line(
+                                start_x=0,
+                                start_y=0,
+                                end_x=flight_order.hospital.east_m,
+                                end_y=flight_order.hospital.north_m,
+                                speed=ZIP_SPEED_MPS,
+                                time=sec_since_midnight,
+                                start_time=flight.launch_time
+                            )
+                            angle = point_angle_deg(
+                                start_x=0,
+                                start_y=0,
+                                end_x=flight_order.hospital.east_m,
+                                end_y=flight_order.hospital.north_m,
+                            )
+
+                            flights.append({
+                                'status': 'deployed',
+                                'destination': flight_order.hospital.name,
+                                'x': x,
+                                'y': y,
+                                'rotation': angle
+                            })
+                        
+                        # inbound
+                        else:
+                            x, y = find_point_on_line(
+                                start_x=flight_order.hospital.east_m,
+                                start_y=flight_order.hospital.north_m,
+                                end_x=0,
+                                end_y=0,
+                                speed=ZIP_SPEED_MPS,
+                                time=sec_since_midnight,
+                                start_time=flight.launch_time + (total_trip_time / 2)
+                            )
+                            angle = point_angle_deg(
+                                start_x=flight_order.hospital.east_m,
+                                start_y=flight_order.hospital.north_m,
+                                end_x=0,
+                                end_y=0,
+                            )
+
+                            flights.append({
+                                'status': 'deployed',
+                                'destination': 'Home',
+                                'x': x,
+                                'y': y,
+                                'rotation': angle
+                            })
+
+                        #print(f"current time: {sec_since_midnight}")
+                        #print(f"going to {flight_order.hospital.east_m}, {flight_order.hospital.north_m}")
+                        #print(f"currently {x}, {y}")
+                        #print(f"angle {angle}")
+                        #print(f"return time: {flight.return_time}\n")
+
+                    except IndexError:
+                        flights.append({
+                            'status': 'standby',
+                            'destination': 'Home',
+                            'x': 0,
+                            'y': 0,
+                            'rotation': 0
+                        })
+
+                open_orders = [
+                    {
+                        'time': order.time,
+                        'destination': order.hospital.name,
+                        'status': order.priority
+                    }
+                    for order in self.orders
+                ]
+                simulation_result[sec_since_midnight] = {'flights': flights,'futureOrders': open_orders}
 
         # These orders were not launched by midnight
         print(
@@ -317,14 +470,17 @@ class Runner:
         Args:
             sec_since_midnight (int): Seconds since midnight.
         """
-        while self.active_flights and self.active_flights[0].return_time == sec_since_midnight:
-            # Find any flights that have returned and ensure we inventory the zip
-            flight = self.active_flights.pop(0)
-            print(f"[{sec_since_midnight}] {flight} returned to base")
+        flights_to_check = self.active_flights
 
-            # track returned inventory
-            self.scheduler.num_zips += 1
+        # Find any flights that have returned and ensure we inventory the zip
+        for flight in flights_to_check:
+            if flight.return_time <= sec_since_midnight:
+                self.active_flights.remove(flight)
 
+                print(f"[{sec_since_midnight}] {flight} returned to base")
+
+                # track returned inventory
+                self.scheduler.num_zips += 1
 
 
 """
@@ -341,3 +497,6 @@ if __name__ == "__main__":
         orders_path='inputs/orders.csv',
     )
     runner.run()
+
+    # save the simulation
+    with open('simulation.json', 'wt') as fio: json.dump(simulation_result, fio)

@@ -1,5 +1,5 @@
 <template>
-  <div class="hospital-base" :style="{top: positionY, left: positionX}">
+  <div class="hospital-base" :style="{bottom: positionY, left: positionX}">
     <img src="/img/hospital.svg" alt="hospital"/>
     <div class="name-label">{{ name }}</div>
   </div>
@@ -25,13 +25,13 @@ export default {
   },
   methods: {
     position(x, y) {
-      const xGridUnits = (x / 10000) + 8;
-      const yGridUnits = (y / 10000) + 6;
+      const xGridUnits = (x / 10000) + 6;
+      const yGridUnits = (y / 10000) + 9;
 
       // each 1 GRID_CONST == 10k
-      const GRID_CONST = 52;
-      this.positionY = `${(GRID_CONST * yGridUnits) - 25}px`;
-      this.positionX = `${(GRID_CONST * xGridUnits) - 25}px`;
+      const GRID_CONST = 42;
+      this.positionY = `${(GRID_CONST * yGridUnits) - 20}px`;
+      this.positionX = `${(GRID_CONST * xGridUnits) - 20}px`;
     },
   },
 };
@@ -42,8 +42,8 @@ export default {
 @import "@/scss/color.scss";
 
 .hospital-base {
-  height: 52px;
-  width: 52px;
+  height: 40px;
+  width: 40px;
   position: absolute;
   display: flex;
   flex-direction: column;
