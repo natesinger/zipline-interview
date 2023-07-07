@@ -12,7 +12,7 @@ export default {
     PreauthBackground,
   },
   created() {
-    document.title = 'Hack a Bit | 404';
+    document.title = 'Zipline Code Challenge | 404';
   },
 };
 </script>

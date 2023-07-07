@@ -24,6 +24,7 @@ required_environment_variables = [
 
 with open('simulation.json', 'r') as fio:
     simulation_data = json.load(fio)
+    logging.info(f'got simulation data {len(simulation_data)}')
 
 for environment_variable in required_environment_variables:
     if environment_variable not in os.environ:
@@ -135,7 +136,6 @@ futureOrders = [
 @socketio.on('message_event')
 def process_message(message):
     time_seconds = message['data']
-    logging.info(f'got {time_seconds} seconds')
 
     try:
         time_rounded = str(math.floor(int(time_seconds) / 60) * 60)

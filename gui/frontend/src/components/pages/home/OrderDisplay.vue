@@ -42,7 +42,7 @@ export default {
 
 .order-pane {
   margin-top: 15px;
-  width: 400px;
+  width: 350px;
   height: 316px;
   height: calc((100% - 391px - 15px));
   background-color: $color-light-5;
@@ -80,9 +80,15 @@ export default {
     align-items: center;
     justify-content: space-between;
 
+    .order-time {
+      margin: 0 20px;
+      font-weight: 600;
+    }
+
     .order-destination {
       width: 75px;
       text-align: center;
+      margin: 0 10px;
     }
 
     .order-status {
@@ -107,63 +113,5 @@ export default {
       }
     }
   }
-
-  /*.flight {
-    height: 30px;
-    width: 98%;
-    margin-top: 5px;
-    border-radius: 5px;
-
-    background-color: #dbdbdb;
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-
-    font-size: 16px;
-    font-weight: 350;
-    line-height: 16px;
-
-    .flight-id {
-      margin: 0 10px;
-    }
-
-    .flight-status {
-      height: 70%;
-      min-width: 90px;
-      margin: 0 10px;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 14px;
-      border-radius: 5px;
-
-      color: $color-light-1;
-
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-
-      &.deployed {
-        background-color: #234faf;
-        border: 2px solid  #152e64;
-      }
-
-      &.standby {
-        background-color: #00860b;
-        border: 2px solid  #005e08;
-      }
-    }
-
-    .flight-destination {
-      min-width: 80px;
-      text-align: center;
-    }
-
-    .flight-cords {
-      flex-grow: 1;
-      text-align: right;
-      margin: 0 10px;
-    }
-  }*/
 }
 </style>

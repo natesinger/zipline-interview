@@ -30,7 +30,6 @@ export default {
     PlaybackController,
   },
   created() {
-    document.title = 'Hack a Bit | Dashboard';
     // eslint-disable-next-line no-undef
     this.connection = io(this.deriveWsURL());
 

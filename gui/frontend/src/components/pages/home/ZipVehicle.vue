@@ -77,8 +77,4 @@ export default {
     display: none;
   }
 }
-
-.zip-vehicle:hover {
-  cursor: help;
-}
 </style>

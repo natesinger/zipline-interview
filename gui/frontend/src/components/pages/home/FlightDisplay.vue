@@ -37,7 +37,7 @@ export default {
 @import "@/scss/color.scss";
 
 .flight-pane {
-  width: 400px;
+  width: 350px;
   height: 391px;
   background-color: $color-light-5;
   border-radius: 10px;
@@ -77,6 +77,7 @@ export default {
     .flight-status {
       height: 70%;
       min-width: 90px;
+      flex-grow: 1;
       margin: 0 10px;
       font-size: 14px;
       font-weight: 500;
@@ -109,7 +110,8 @@ export default {
     .flight-cords {
       flex-grow: 1;
       text-align: right;
-      margin: 0 10px;
+      min-width: 140px;
+      margin-right: 10px;
     }
   }
 }
